@@ -6,5 +6,5 @@
 - manage color-roles based off hex-codes, custom for each user. So none of that pre-generated lists of colors stuff! Custom all the way :D
 
 <p>
-Is the .gitignore working now?
+Is the .gitignore working now? How about now?
 </p>
