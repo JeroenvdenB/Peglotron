@@ -2,7 +2,5 @@
 
 <p>A discord bot meant to:</p>
 
-- accept user input for prompts
-- keep track of pompt-occurrance
-- post the next prompt from the waiting list, or a random one from the database, once per day
-- manage color roles based on hex-codes a user puts in
+- create a daily prompt system, where prompts from a user-submitted database are chosen
+- manage color-roles based off hex-codes, custom for each user. So none of that pre-generated lists of colors stuff! Custom all the way :D
