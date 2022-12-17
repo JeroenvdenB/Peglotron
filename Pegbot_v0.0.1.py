@@ -20,7 +20,6 @@ bot = discord.Bot(intents=intents)
 async def on_ready():
     print(f"We have logged in as {bot.user}")
 
-
 # Create Slash commands group with the bot.create_group
 greetings = bot.create_group("greetings","Greet people")
 
