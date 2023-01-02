@@ -7,3 +7,4 @@
 
 v0.0.1 - example slash commands built
 v0.0.2 - open a DM to the bot
+Dropped manual version control. Renamed v0.0.1 as 'slash_command_examples' and v0.0.2 as 'main'.
