@@ -1,1 +1,7 @@
 .env
+
+# LaTeX stuff
+.aux
+.out
+.synctex.gz
+.toc
