@@ -3,19 +3,14 @@
 
 import discord
 import os
-#import pandas as pd
 from dotenv import load_dotenv
 from add_prompt import add_prompt
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
 token = os.getenv("TOKEN")
-
 bot = discord.Bot()
 
-# Load any required csv files
-#df = pd.read_csv('recieved_msg.csv', delimiter = ';')
-#print(f'file loaded. Printing...', df)
 
 # Confirm connection in the terminal
 @bot.event
@@ -43,17 +38,13 @@ async def dm(ctx):
   msg = await bot.wait_for("message") # await response in DM. Allows for only 1 respons sent. He stops listening after 1 response.
   
   # Add the prompt given to a csv file - uses add_prompt function
-  added = add_prompt(ctx,msg)
+  added = add_prompt(ctx,msg) # Function returns True when completed.
   if added:
     await ctx.author.send("I saved your message. Thanks!")
   else:
     await ctx.author.send("A problem occurred when processing your prompt.")
 
   
-
-
-
-
 
 bot.run(token)
 
