@@ -3,8 +3,9 @@
 
 import discord
 import os
+#import pandas as pd
 from dotenv import load_dotenv
-import pandas as pd
+from add_prompt import add_prompt
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
@@ -13,8 +14,8 @@ token = os.getenv("TOKEN")
 bot = discord.Bot()
 
 # Load any required csv files
-df = pd.read_csv('recieved_msg.csv', delimiter = ';')
-print(f'file loaded. Printing...', df)
+#df = pd.read_csv('recieved_msg.csv', delimiter = ';')
+#print(f'file loaded. Printing...', df)
 
 # Confirm connection in the terminal
 @bot.event
@@ -43,15 +44,12 @@ async def dm(ctx):
   print("recieved message: " + msg.content) # print to terminal to confirm received message
 
   # Add the prompt given to a csv file (loaded at start of the code)
-  user = ctx.author
-  text = msg.content
-  add_this = pd.DataFrame([[user, text]], columns=('user','text'))
-  new_df = pd.concat([df, add_this], ignore_index=True) # Don't reference df = pd.concat[df... etc. Gives unbound variable error.
-  new_df.to_csv('recieved_msg.csv', index=False, sep=';') # Overwrite existing file
-  print(new_df)
-  # Move the writing to csv to a helper function to call on. Overwrites prompts file.
-  # Every function that uses prompts must reload the file fresh and save changes!
-  # Don't let it linger in memory!
+  added = add_prompt(ctx,msg)
+  if added:
+    await ctx.author.send("I saved your message. Thanks!")
+  else:
+    await ctx.author.send("A problem occurred, sorry.")
+
   
 
 
