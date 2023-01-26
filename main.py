@@ -41,14 +41,13 @@ async def dm(ctx):
   await ctx.author.send("Hi there!") # DM user that invoked the command
   await ctx.respond(f"Message sent.") # send in channel the command was issued
   msg = await bot.wait_for("message") # await response in DM. Allows for only 1 respons sent. He stops listening after 1 response.
-  print("recieved message: " + msg.content) # print to terminal to confirm received message
-
-  # Add the prompt given to a csv file (loaded at start of the code)
+  
+  # Add the prompt given to a csv file - uses add_prompt function
   added = add_prompt(ctx,msg)
   if added:
     await ctx.author.send("I saved your message. Thanks!")
   else:
-    await ctx.author.send("A problem occurred, sorry.")
+    await ctx.author.send("A problem occurred when processing your prompt.")
 
   
 
