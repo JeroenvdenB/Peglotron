@@ -4,7 +4,9 @@
 import discord
 import os
 from dotenv import load_dotenv
-from add_prompt import add_prompt
+from helper_functions import add_prompt
+from helper_functions import df_to_text
+import pandas as pd
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
@@ -44,7 +46,14 @@ async def dm(ctx):
   else:
     await ctx.author.send("A problem occurred when processing your prompt.")
 
-  
+# A command to make the bot show what's in a specific csv file
+# Example: show the submissions.csv
+# Used a helper function because this behavior will return for all seperate buckets.
+@bot.command(decription = "Show submissions.")
+async def show(ctx):
+  bucket = "SUBMISSIONS"
+  response_text = f'```' + df_to_text(bucket) + f'```' #formatting with ``` triggers a markdown window.
+  await ctx.respond(response_text)
 
 bot.run(token)
 
