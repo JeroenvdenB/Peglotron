@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from helper_functions import add_prompt
 from helper_functions import df_to_text
 import pandas as pd
+from views import MyView
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
@@ -59,11 +60,18 @@ async def dm(ctx):
 # A command to make the bot show what's in a specific csv file
 # Example: show the submissions.csv
 # Used a helper function because this behavior will return for all seperate buckets.
-@bot.command(decription = "Show saved submissions.")
+@bot.command(description = "Show saved submissions.")
 async def show(ctx):
   bucket = "SUBMISSIONS"
   response_text = f'```' + df_to_text(bucket) + f'```' #formatting with ``` triggers a markdown window.
   await ctx.respond(response_text)
+
+
+# This command calls forth buttons. Buttons are defined in a view.
+# All views are in views.py
+@bot.command(description = "Summon a button to click.") # Slash command that calls MyView, with test buttons
+async def button(ctx):
+  await ctx.respond("These are two buttons!", view=MyView()) # Send a message with our View Class that contains the button.
 
 bot.run(token)
 
