@@ -12,7 +12,7 @@ class MyView(discord.ui.View): # Create a class called Myview that subclasses di
   async def second_button_callback(self, button, interaction):
     for child in self.children: # Loop over the children of the view
       child.disabled = True # Set the button to disabled
-    await interaction.response.edit_message(view=self)
+    await interaction.response.edit_message(view=self) 
 
   # Add a time-out here
   pass
