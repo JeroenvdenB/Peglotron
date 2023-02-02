@@ -73,6 +73,26 @@ async def show(ctx):
 async def button(ctx):
   await ctx.respond("These are two buttons!", view=MyView()) # Send a message with our View Class that contains the button.
 
+# Try making a modal
+class MyModal(discord.ui.Modal):
+  def __init__(self, *args, **kwargs) -> None:
+    super().__init__(*args, **kwargs)
+
+    self.add_item(discord.ui.InputText(label="Enter your prompt here and click submit.", style = discord.InputTextStyle.long))
+  
+  async def callback(self, interaction: discord.Interaction): # DO NOT alter the callback name
+    embed = discord.Embed(title="Modal Results", color=5763719)
+    embed.add_field(name="Suggested prompt:", value = self.children[0].value)
+    print(discord.Interaction.user)
+    await discord.Interaction.user.send("Just checking in!")
+    # embed.set_author(name = discord.Interaction.user.name) <- error: 'member_descriptor' object has no attribute 'name'
+    await interaction.response.send_message(embeds=[embed])
+
+@bot.command(description = "Call forth a test Modal.")
+async def trymodal(ctx):
+  modal = MyModal(title = "Modal via Slash Command")
+  await ctx.send_modal(modal)
+
 bot.run(token)
 
 # No code is executed after the bot.run()
