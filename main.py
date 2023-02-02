@@ -83,8 +83,7 @@ class MyModal(discord.ui.Modal):
   async def callback(self, interaction: discord.Interaction): # DO NOT alter the callback name
     embed = discord.Embed(title="Modal Results", color=5763719)
     embed.add_field(name="Suggested prompt:", value = self.children[0].value)
-    print(discord.Interaction.user)
-    await discord.Interaction.user.send("Just checking in!")
+    print(discord.Interaction.user) # returns "<member 'user' of 'Interaction' objects>" instead of the attribute, which by all means, it should return???
     # embed.set_author(name = discord.Interaction.user.name) <- error: 'member_descriptor' object has no attribute 'name'
     await interaction.response.send_message(embeds=[embed])
 
