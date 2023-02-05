@@ -39,7 +39,15 @@ Before you can run the code, you need to have a Discord bot account and get its 
 
 You'll be presented with a list of your applications. Select your bot, or if you don't have one yet, click the "New Application" button at the top right. After creating your bot account, it should give you the bot's token. \textbf{Save the token somewhere secure. If you forget the token, you'll have to reset it.} For security reasons, Discord only shows you the token at the time it's generated. \\
 
-To provide the token to the bot, you'll have to create a \verb|.env| file and put the token in it. The contents of your \verb|.env| file should look like this: 
+To provide the token to the bot, you'll have to create a \verb|.env| file in the same folder as \verb|main.py|, and put the token in it. The contents of your \verb|.env| file should look like this: 
+
+\begin{verbatim}
+TOKEN="your_token_here"
+\end{verbatim}
+
+Now, all you need to do is run the bot using \verb|python3 main.py|. It should print out \verb|We have logged in as <bot_username>| when it runs successfully.\\
+
+If you run into SSL certificate errors, run \verb|pip3 install --upgrade certifi| and then restart your terminal. \verb|certifi| is what Python uses for SSL certificates, sometimes it needs updating to install the latest certificates. \\
 
 
 \end{document}
