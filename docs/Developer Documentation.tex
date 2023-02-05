@@ -21,4 +21,25 @@ Peglotron is a discord bot meant to:
 
 This is all done with the \href{https://guide.pycord.dev/}{pycord} library. 
 
+
+\section{Getting Started}
+
+\subsection{Dependencies}
+Peglotron has the following python dependencies:
+\begin{itemize}
+	\item py-cord
+	\item python-dotenv
+	\item pandas
+\end{itemize}
+
+You can install them by running \verb|pip3 install py-cord python-dotenv|. 
+
+\subsection{First Time Setup}
+Before you can run the code, you need to have a Discord bot account and get its login token. If you don't have one, or you need to get the token from your existing one, you can do so on \href{https://discord.com/developers/applications/me}{Discord's developer applications page}. \\
+
+You'll be presented with a list of your applications. Select your bot, or if you don't have one yet, click the "New Application" button at the top right. After creating your bot account, it should give you the bot's token. \textbf{Save the token somewhere secure. If you forget the token, you'll have to reset it.} For security reasons, Discord only shows you the token at the time it's generated. \\
+
+To provide the token to the bot, you'll have to create a \verb|.env| file and put the token in it. The contents of your \verb|.env| file should look like this: 
+
+
 \end{document}
