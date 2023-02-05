@@ -8,3 +8,8 @@ __pycache__
 .synctex.gz
 .toc
 .log
+docs/*.aux
+docs/*.out
+docs/*.synctex.gz
+docs/*.toc
+docs/*.log
