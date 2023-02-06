@@ -1,6 +1,7 @@
 import discord
 import pandas as pd
 import os
+from helper_functions import add_prompt
 
 # A test modal
 class TestModal(discord.ui.Modal):
@@ -42,12 +43,8 @@ class PromptModal(discord.ui.Modal):
 
     await interaction.response.send_message(embeds = [embed])
 
-    # Save interaction to temporary file for processing elsewehere
     user = interaction.user
     prompt = self.children[0].value
-    filepath = os.getenv("TEMP")
-    save_this = pd.DataFrame([[user, prompt]], columns = ('user', 'prompt'))
-    # To do: add the new prompt to the awaiting submissions file in the right bucket
-    # Bucket name is passed into the modal as the custom_id
-    # Then check if the temp file is still neccessary
-    
+    bucket = self.custom_id
+    add_prompt(user, prompt, bucket)
+
