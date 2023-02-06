@@ -8,6 +8,8 @@ from helper_functions import add_prompt
 from helper_functions import df_to_text
 import pandas as pd
 from views import MyView
+from views import SubmissionButtons
+from modals import TestModal
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
@@ -70,28 +72,17 @@ async def show(ctx):
 # This command calls forth buttons. Buttons are defined in a view.
 # All views are in views.py
 @bot.command(description = "Summon a button to click.") # Slash command that calls MyView, with test buttons
-async def button(ctx):
+async def testbutton(ctx):
   await ctx.respond("These are two buttons!", view=MyView()) # Send a message with our View Class that contains the button.
 
-# Try making a modal
-class MyModal(discord.ui.Modal):
-  def __init__(self, *args, **kwargs) -> None:
-    super().__init__(*args, **kwargs)
+@bot.command(description = "Summon the submissions buttons.")
+async def submitbutton(ctx):
+  await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons())
 
-    self.add_item(discord.ui.InputText(label="Enter your prompt here and click submit.", style = discord.InputTextStyle.long))
-  
-  async def callback(self, interaction: discord.Interaction): # DO NOT alter the callback name
-    embed = discord.Embed(title="Modal Results", color=5763719)
-    embed.add_field(name="Suggested prompt:", value = self.children[0].value)
-    print(discord.Interaction.user) # returns "<member 'user' of 'Interaction' objects>" instead of the user attribute that I expected.
-    # in debug you can see the member 'user' with all the data I need, but it refuses to read 'user' as an object with the 'name' attribute.
-    # instead it persists that it's a member with no attributes.
-    # embed.set_author(name = discord.Interaction.user.name) <- error: 'member_descriptor' object has no attribute 'name'
-    await interaction.response.send_message(embeds=[embed])
-
+# Command to call for the test modal
 @bot.command(description = "Call forth a test Modal.")
-async def trymodal(ctx):
-  modal = MyModal(title = "Modal via Slash Command")
+async def testmodal(ctx):
+  modal = TestModal(title = "Modal via Slash Command")
   await ctx.send_modal(modal)
 
 bot.run(token)
