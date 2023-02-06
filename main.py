@@ -52,7 +52,9 @@ async def dm(ctx):
     else:
       pass
   
-    added = add_prompt(ctx,msg) # Add the prompt given to a csv file - uses add_prompt function
+    user = ctx.author
+    bucket = 'SFW' # Default open_SFW bucket for now
+    added = add_prompt(user,msg,bucket) # Add the prompt given to a csv file - uses add_prompt function
     if added:
       await ctx.author.send("I saved your message. Thanks!")
     else:
