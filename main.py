@@ -79,7 +79,7 @@ async def testbutton(ctx):
 
 @bot.command(description = "Summon the submissions buttons.")
 async def submitbutton(ctx):
-  await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons())
+  await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons(timeout=180))
 
 # Command to call for the test modal
 @bot.command(description = "Call forth a test Modal.")
