@@ -47,8 +47,6 @@ def df_to_text(bucket: str):
         Since this function can show any .csv content (open, ready and used prompt buckets), you need to be more specific.    
     """
 
-    import pandas as pd
-    import os
     filepath = os.getenv(bucket)
     response_text = pd.read_csv(filepath, delimiter = ';').to_markdown()
     return response_text
