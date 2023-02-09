@@ -71,12 +71,8 @@ async def show(ctx):
   await ctx.respond(response_text)
 
 
-# This command calls forth buttons. Buttons are defined in a view.
+# BUTTONS
 # All views are in views.py
-@bot.command(description = "Summon a button to click.") # Slash command that calls MyView, with test buttons
-async def testbutton(ctx):
-  await ctx.respond("These are two buttons!", view=MyView()) # Send a message with our View Class that contains the button.
-
 @bot.command(description = "Summon the submissions buttons.")
 async def submitbutton(ctx):
   await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons(timeout=180))
