@@ -22,6 +22,3 @@ class PromptModal(discord.ui.Modal):
     embed.set_author(name = user.display_name) # User is stored, but display_name is shown in response
 
     await interaction.response.send_message(embeds = [embed])
-
-
-
