@@ -66,7 +66,7 @@ async def dm(ctx):
 # Used a helper function because this behavior will return for all seperate buckets.
 @bot.command(description = "Show saved submissions.")
 async def show(ctx):
-  bucket = "SUBMISSIONS"
+  bucket = "OPEN_SFW_SUBMISSIONS"
   response_text = f'```' + df_to_text(bucket) + f'```' #formatting with ``` triggers a markdown window.
   await ctx.respond(response_text)
 
@@ -81,11 +81,6 @@ async def testbutton(ctx):
 async def submitbutton(ctx):
   await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons(timeout=180))
 
-# Command to call for the test modal
-@bot.command(description = "Call forth a test Modal.")
-async def testmodal(ctx):
-  modal = TestModal(title = "Modal via Slash Command")
-  await ctx.send_modal(modal)
 
 bot.run(token)
 
