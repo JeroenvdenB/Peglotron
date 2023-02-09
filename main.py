@@ -7,9 +7,7 @@ from dotenv import load_dotenv
 from helper_functions import add_prompt
 from helper_functions import df_to_text
 import pandas as pd
-from views import MyView
 from views import SubmissionButtons
-from modals import TestModal
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
