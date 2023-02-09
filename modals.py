@@ -18,7 +18,10 @@ class PromptModal(discord.ui.Modal):
     
     # Create an embed and respond
     embed = discord.Embed(title = "Prompt submitted for approval :)", color = 5763719) # Green embed
-    embed.add_field(name = " ", value = prompt)
+    if bucket == 'NSFW':
+      embed.add_field(name = " ", value = f'[Redacted for NSFW]: || prompt ||') # Redact NSFW prompts with spoiler brackets.
+    else:
+      embed.add_field(name = " ", value = prompt)
     embed.set_author(name = user.display_name) # User is stored, but display_name is shown in response
 
     await interaction.response.send_message(embeds = [embed])
