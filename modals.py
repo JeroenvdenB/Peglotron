@@ -13,8 +13,7 @@ class TestModal(discord.ui.Modal):
   async def callback(self, interaction: discord.Interaction): # DO NOT alter the callback name
     embed = discord.Embed(title="Modal Results", color=5763719)
     embed.add_field(name="Suggested prompt:", value = self.children[0].value)
-    print(interaction.user, " has filled in a Modal.") # Don't be a dum-dum and access the variable, not the Class. Thx, me.
-    embed.set_author(name = interaction.user)
+    embed.set_author(name = interaction.user.display_name)
     await interaction.response.send_message(embeds=[embed])
 
     """ By callin on the interaction variable, several things
@@ -33,18 +32,18 @@ class PromptModal(discord.ui.Modal):
     self.add_item(discord.ui.InputText(label = "Enter your prompt here and click submit.", style = discord.InputTextStyle.long))
   
   async def callback(self, interaction: discord.Interaction):
-    embed = discord.Embed(title = "Prompt submitted for approval :)", color = 5763719)
-    embed.add_field(name = " ", value = self.children[0].value)
-    embed.set_author(name = interaction.user)
-    # Dev lines printing in terminal - remove when done.
-    print(interaction.user, " has submitted a prompt:")
-    print("   ", self.children[0].value)
-    print(self.custom_id)
-
-    await interaction.response.send_message(embeds = [embed])
-
+    # Save the prompt to the correct .csv
     user = interaction.user
     prompt = self.children[0].value
     bucket = self.custom_id
     add_prompt(user, prompt, bucket)
+    
+    # Create an embed and respond
+    embed = discord.Embed(title = "Prompt submitted for approval :)", color = 5763719) # Green embed
+    embed.add_field(name = " ", value = prompt)
+    embed.set_author(name = user.display_name) # User is stored, but display_name is shown in response
+
+    await interaction.response.send_message(embeds = [embed])
+
+
 
