@@ -75,6 +75,20 @@ async def show(ctx):
 async def submitbutton(ctx):
   await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons(timeout=180))
 
+@bot.command(description = "Ping in output channel")
+async def channelping (ctx):
+  channel_id = int(os.getenv("PINGSET")) # .env yields strings. Convert to int for channel id
+  channel = bot.get_channel(channel_id)
+  await channel.send("Ping!")
+  await ctx.respond("Pinging...")
+
+@bot.command(description = "Set channelping output channel")
+async def pingset(ctx, channel_id: discord.Option(str)):
+  os.environ["PINGSET"] = channel_id
+  print(os.environ["PINGSET"])
+  print(os.getenv("PINGSET"))
+  await ctx.respond(f'You entered the id: {channel_id}') # I'd like to get the id as int but the number is too big.
+
 
 bot.run(token)
 
