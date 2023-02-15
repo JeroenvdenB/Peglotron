@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import configparser
 
 def add_prompt(user: str, prompt: str, bucket: str):
     """
@@ -50,3 +51,27 @@ def df_to_text(bucket: str):
     filepath = os.getenv(bucket)
     response_text = pd.read_csv(filepath, delimiter = ';').to_markdown()
     return response_text
+
+def set_channel(command, channel_id):
+    # Requires an alreadys et up .ini file with ['OutputChannels'] and set keys. Keys may be empty upon setup.
+    
+    config = configparser.ConfigParser()
+    config.read('peglotron.ini')
+    valid_commands = []
+
+    # Check if the command entered is a key in the ini file
+    for key in config['OutputChannels']:
+        valid_commands.append(key)
+    print(valid_commands)
+
+    if command in valid_commands:
+        print("The command is valid")
+    else:
+        print("Invalid command type input")
+        raise TypeError
+
+    # Proceed to change the desired command
+    config['OutputChannels'][command] = channel_id
+
+    with open('peglotron.ini', 'w') as configfile:
+        config.write(configfile)
