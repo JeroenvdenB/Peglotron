@@ -6,8 +6,10 @@ import os
 from dotenv import load_dotenv
 from helper_functions import add_prompt
 from helper_functions import df_to_text
+from helper_functions import set_channel
 import pandas as pd
 from views import SubmissionButtons
+import configparser
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
@@ -77,17 +79,16 @@ async def submitbutton(ctx):
 
 @bot.command(description = "Ping in output channel")
 async def channelping (ctx):
-  channel_id = int(os.getenv("PINGSET")) # .env yields strings. Convert to int for channel id
-  channel = bot.get_channel(channel_id)
-  await channel.send("Ping!")
+  config = configparser.ConfigParser()
+  config.read('peglotron.ini')
+  channel_id = int(config['OutputChannels']['channelping'])
+  await bot.get_channel(channel_id).send("Ping!")
   await ctx.respond("Pinging...")
 
 @bot.command(description = "Set channelping output channel")
 async def pingset(ctx, channel_id: discord.Option(str)):
-  os.environ["PINGSET"] = channel_id
-  print(os.environ["PINGSET"])
-  print(os.getenv("PINGSET"))
-  await ctx.respond(f'You entered the id: {channel_id}') # I'd like to get the id as int but the number is too big.
+  set_channel('channelping', channel_id)
+  await ctx.respond(f'The output channel for `\\channelping` was set to: {channel_id}')
 
 
 bot.run(token)
