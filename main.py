@@ -10,6 +10,7 @@ from helper_functions import set_channel
 import pandas as pd
 from views import SubmissionButtons
 import configparser
+from views import MyMenu
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
@@ -77,6 +78,7 @@ async def show(ctx):
 async def submitbutton(ctx):
   await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons(timeout=180))
 
+# SETTING OUTPUTS
 @bot.command(description = "Ping in output channel")
 async def channelping (ctx):
   config = configparser.ConfigParser()
@@ -89,6 +91,12 @@ async def channelping (ctx):
 async def pingset(ctx, channel_id: discord.Option(str)):
   set_channel('channelping', channel_id)
   await ctx.respond(f'The output channel for `\\channelping` was set to: {channel_id}')
+
+# APPROVE PROMPTS
+# try to create a menu to pick multiple options from
+@bot.command()
+async def menu(ctx):
+  await ctx.send("Try this menu!", view = MyMenu())
 
 
 bot.run(token)
