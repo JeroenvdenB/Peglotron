@@ -10,6 +10,7 @@ from helper_functions import add_prompt
 from helper_functions import df_to_text
 from helper_functions import set_channel
 from views import SubmissionButtons
+from views import ApprovePrompt
 
 
 # Make a .env locally that contains the token of the server that the bot should log into.
@@ -92,8 +93,16 @@ async def pingset(ctx, channel_id: discord.Option(str)):
   set_channel('channelping', channel_id)
   await ctx.respond(f'The output channel for `\\channelping` was set to: {channel_id}')
 
-# APPROVE PROMPTS 
-# Add structure here
+# APPROVE PROMPTS WITH BUTTONS
+@bot.command(description = "Approve or reject prompts")
+async def approveprompt(ctx, bucket: discord.Option(str)):
+  valid_buckets = ['sfw', 'nsfw', 'weekly']
+  bucket_name = bucket.upper()
+  if bucket.lower() in valid_buckets:
+    await ctx.respond(f"Approve or reject prompts for the `{bucket_name}` bucket.", view = ApprovePrompt())
+  else:
+    await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")
+
 
 bot.run(token)
 
