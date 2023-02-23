@@ -29,3 +29,24 @@ class SubmissionButtons(discord.ui.View):
     await self.message.edit(content = "Thank you for submitting your prompts! Feel free to send more at any time through `/submit`", view= self)
 
 
+# APPROVE PROMPT MENU
+class ApprovePrompt(discord.ui.View):
+  @discord.ui.button(label="OK", style = discord.ButtonStyle.success)
+  async def ok_button_callback(self, button, interaction):
+    await interaction.response.send_message("You pressed the A-OK button!")
+  
+  @discord.ui.button(label="X", style=discord.ButtonStyle.danger)
+  async def x_button_callback(self, button, interaction):
+    await interaction.response.send_message("You rejected this prompt. Or would have if the button worked.")
+
+  @discord.ui.button(label="Edit", style=discord.ButtonStyle.primary)
+  async def edit_button_callback(self, button, interaction):
+    await interaction.response.send_message("This feature is not available yet.")
+  
+  @discord.ui.button(label="Stop", style=discord.ButtonStyle.primary)
+  async def stop_button_callback(self, button, interaction):
+    for child in self.children:
+      child.disabled = True
+    await self.message.edit(content = " ", view = self)
+    await interaction.response.send_message("Thank you, I disabled the menu.")
+
