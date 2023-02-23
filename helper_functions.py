@@ -53,7 +53,20 @@ def df_to_text(bucket: str):
     return response_text
 
 def set_channel(command, channel_id):
-    # Requires an alreadys et up .ini file with ['OutputChannels'] and set keys. Keys may be empty upon setup.
+    """
+    Changes the ouput channel ID for a function that outputs into the server.
+    Outputting functions need to be defined in the accompanying .ini file under ['OutputChannels'].
+    Keys may be empty upon setup. 
+    Raises KeyError when the given command does not correspond to a slash-command name listed under 'OutputChannels'.
+
+    Parameters
+    ----------
+    command: :class:`str`
+        The name of the command that has an output to a channel.
+    channel_id: :class:`str`
+        The channel ID that should be set in the .ini file. 
+        It's initially accepted as discord.Option to a slash command, which always yields a string. Also too large a number as a standard integer. 
+    """
     
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
@@ -68,7 +81,7 @@ def set_channel(command, channel_id):
         print("The command is valid")
     else:
         print("Invalid command type input")
-        raise TypeError
+        raise KeyError
 
     # Proceed to change the desired command
     config['OutputChannels'][command] = channel_id
