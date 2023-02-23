@@ -3,14 +3,14 @@
 
 import discord
 import os
+import configparser
+import pandas as pd
 from dotenv import load_dotenv
 from helper_functions import add_prompt
 from helper_functions import df_to_text
 from helper_functions import set_channel
-import pandas as pd
 from views import SubmissionButtons
-import configparser
-from views import MyMenu
+
 
 # Make a .env locally that contains the token of the server that the bot should log into.
 load_dotenv()
@@ -92,12 +92,8 @@ async def pingset(ctx, channel_id: discord.Option(str)):
   set_channel('channelping', channel_id)
   await ctx.respond(f'The output channel for `\\channelping` was set to: {channel_id}')
 
-# APPROVE PROMPTS
-# try to create a menu to pick multiple options from
-@bot.command()
-async def menu(ctx):
-  await ctx.send("Try this menu!", view = MyMenu())
-
+# APPROVE PROMPTS 
+# Add structure here
 
 bot.run(token)
 
