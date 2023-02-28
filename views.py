@@ -35,7 +35,7 @@ class ApprovePrompt(discord.ui.View):
 
   @discord.ui.button(label="Skip", style = discord.ButtonStyle.secondary)
   async def skip_button_callback(self, button, interaction):
-    index = int(self.message.embeds[0].fields[0].value)
+    index = int(self.message.embeds[0].fields[0].value) # grab the index of the prompt out of the embed that was previously sent
     index += 1
     embed = prompt_to_embed("SFW", index)
     await self.message.delete() # remove original message to keep the channel clutter-free
