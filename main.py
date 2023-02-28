@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from helper_functions import add_prompt
 from helper_functions import df_to_text
 from helper_functions import set_channel
+from helper_functions import prompt_to_embed
 from views import SubmissionButtons
 from views import ApprovePrompt
 
@@ -96,13 +97,16 @@ async def pingset(ctx, channel_id: discord.Option(str)):
 # APPROVE PROMPTS WITH BUTTONS
 @bot.command(description = "Approve or reject prompts")
 async def approveprompt(ctx, bucket: discord.Option(str)):
-  valid_buckets = ['sfw', 'nsfw', 'weekly']
+  valid_buckets = ['SFW', 'NSFW', 'WEEKLY']
   bucket_name = bucket.upper()
-  if bucket.lower() in valid_buckets:
-    await ctx.respond(f"Approve or reject prompts for the `{bucket_name}` bucket.", view = ApprovePrompt())
-  else:
-    await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")
+  embed = discord.Embed(title = f"Next {bucket_name} prompt: ")
 
+  if bucket_name in valid_buckets: # Check if bucket type is valid
+    embed = prompt_to_embed(bucket_name, 0) # create embed to show the initial prompt before the first viewing of ApprovePrompt()
+    await ctx.respond(content = None, view = ApprovePrompt(), embeds = [embed])
+  else:
+    print("Invalid bucket input")
+    await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")   
 
 bot.run(token)
 
