@@ -1,10 +1,11 @@
 import pandas as pd
 import os
 import configparser
+import discord 
 
 def add_prompt(user: str, prompt: str, bucket: str):
     """
-    Adds the user and the submitted prompt to a .csv file for a specific bucket, such as 'SFW' or 'Weekly'. 
+    Adds the user and the submitted prompt to a .csv file for a specific bucket, such as 'SFW' or 'WEEKLY'. 
     Raises a TypeError in case of invalid bucket notation.
 
     Parameters
@@ -14,7 +15,7 @@ def add_prompt(user: str, prompt: str, bucket: str):
     prompt: :class:`str`
         The content of the prompt. The Modal that creates this will accept up to 4000 characters.
     bucket: :class:`str`
-        A denotion for which bucket the prompt goes in. This can be SFW, NSFW or Weekly. It is always put in the 'open' bucket, awaiting admin approval.
+        A denotion for which bucket the prompt goes in. This can be SFW, NSFW or WEEKLY. It is always put in the 'open' bucket, awaiting admin approval.
     """
 
     # Check bucket type
@@ -22,7 +23,7 @@ def add_prompt(user: str, prompt: str, bucket: str):
         filepath = os.getenv("OPEN_SFW_SUBMISSIONS")
     elif bucket == 'NSFW':
         filepath = os.getenv("OPEN_NSFW_SUBMISSIONS")
-    elif bucket == 'W':
+    elif bucket == 'WEEKLY':
         filepath = os.getenv("OPEN_WEEKLY_SUBMISSIONS")
     else:
         print("Invalid bucket input - accepted are SFW, NSFW and W.")
@@ -52,7 +53,7 @@ def df_to_text(bucket: str):
     response_text = pd.read_csv(filepath, delimiter = ';').to_markdown()
     return response_text
 
-def set_channel(command, channel_id):
+def set_channel(command: str, channel_id: str):
     """
     Changes the ouput channel ID for a function that outputs into the server.
     Outputting functions need to be defined in the accompanying .ini file under ['OutputChannels'].
@@ -88,3 +89,20 @@ def set_channel(command, channel_id):
 
     with open('peglotron.ini', 'w') as configfile:
         config.write(configfile)
+
+def prompt_to_embed(bucket: str, index: int = 0):
+# function works, just needs a description now.
+
+    # Generate filepath based on bucket name and read file
+    filepath = os.getenv(f"OPEN_{bucket}_SUBMISSIONS")
+    df = pd.read_csv(filepath, delimiter= ';')
+
+    # Catch exception in case the index is out of bounds
+    try:
+        nextprompt = df['prompt'][index]
+    except:
+        print("Requested prompt index is probably out of bounds")     
+    else:    
+        embed = discord.Embed(title = f"Next {bucket} prompt: ") # create embed object
+        embed.add_field(name = " ", value= nextprompt)
+        return embed
