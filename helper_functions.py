@@ -103,6 +103,8 @@ def prompt_to_embed(bucket: str, index: int = 0):
     except:
         print("Requested prompt index is probably out of bounds")     
     else:    
-        embed = discord.Embed(title = f"Next {bucket} prompt: ") # create embed object
-        embed.add_field(name = " ", value= nextprompt)
+        embed = discord.Embed(title = f"Working on: {bucket}") # create embed object
+        embed.add_field(name = "Index", value= index)
+        embed.add_field(name = "Prompt", value = nextprompt)
+        embed.add_field(name = 'User', value = df['user'][index])
         return embed
