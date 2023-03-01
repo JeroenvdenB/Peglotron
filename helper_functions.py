@@ -92,19 +92,37 @@ def set_channel(command: str, channel_id: str):
 
 def prompt_to_embed(bucket: str, index: int = 0):
 # function works, just needs a description now.
+    # create embed with title
+    embed = discord.Embed(title = f"Working on: {bucket}") # create embed object
 
     # Generate filepath based on bucket name and read file
     filepath = os.getenv(f"OPEN_{bucket}_SUBMISSIONS")
     df = pd.read_csv(filepath, delimiter= ';')
 
-    # Catch exception in case the index is out of bounds
+    # Catch exception in case the index is out of bounds (skip was pressed too often)
     try:
         nextprompt = df['prompt'][index]
     except:
-        print("Requested prompt index is probably out of bounds")     
+        # write error message
+        embed.add_field(name = "Out of prompts!", value = "You're all caught up.")
+        return embed
     else:    
-        embed = discord.Embed(title = f"Working on: {bucket}") # create embed object
         embed.add_field(name = "Index", value= index)
         embed.add_field(name = "Prompt", value = nextprompt)
         embed.add_field(name = 'User', value = df['user'][index])
         return embed
+    
+def errorlog(date, error):
+# This function was never tested. Dunno if I need it after all.
+    # Open the filein append and read mode (a+)
+    with open ("Errorlog.txt", 'a+') as file_object:
+        # Move the read cursor to the start of the file.
+        file_object.seek(0)
+        # If file is not empty append '\n' for new line
+        data = file_object.read(100)
+        if len(data) > 0:
+            file_object.write("\n")
+        # Append text at the end of the file
+        file_object.write(date, " ; ", error)
+    
+    file_object.close()
