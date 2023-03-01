@@ -1,6 +1,7 @@
 import discord
 from modals import PromptModal
 from helper_functions import prompt_to_embed
+import pandas as pd
 
 # SUBMISSION BUTTONS VIEW
 # Use the custom_id to send the bucket type into the modal
@@ -33,27 +34,28 @@ class SubmissionButtons(discord.ui.View):
 # APPROVE PROMPT MENU
 class ApprovePrompt(discord.ui.View):
 
-  @discord.ui.button(label="Skip", style = discord.ButtonStyle.secondary)
+  @discord.ui.button(label="Accept", style = discord.ButtonStyle.success, row=0)
+  async def accept_button_callback(self, button, interaction):
+    await interaction.response.send_message("You accepted this prompt. Or would have if the button worked.")
+  
+  @discord.ui.button(label="Reject", style=discord.ButtonStyle.danger, row=0)
+  async def reject_button_callback(self, button, interaction):
+    await interaction.response.send_message("You rejected this prompt. Or would have if the button worked.")
+
+  @discord.ui.button(label="Skip", style = discord.ButtonStyle.secondary, row=1)
   async def skip_button_callback(self, button, interaction):
     index = int(self.message.embeds[0].fields[0].value) # grab the index of the prompt out of the embed that was previously sent
-    index += 1
-    embed = prompt_to_embed("SFW", index)
+    index += 1 # increase the index to move to the next prompt
+    bucket = self.message.embeds[0].title.split(" ")[2] # grab the buckete name from the embed
+    embed = prompt_to_embed(bucket, index)
     await self.message.delete() # remove original message to keep the channel clutter-free
     await interaction.response.send_message(content = None, view = self, embeds = [embed]) # don't edit, send a new message! Otherwise self.message does NOT update!
 
-  @discord.ui.button(label="Yay", style = discord.ButtonStyle.success)
-  async def ok_button_callback(self, button, interaction):
-    await interaction.response.send_message("You pressed the A-OK button!")
-  
-  @discord.ui.button(label="Nay", style=discord.ButtonStyle.danger)
-  async def x_button_callback(self, button, interaction):
-    await interaction.response.send_message("You rejected this prompt. Or would have if the button worked.")
-
-  @discord.ui.button(label="Edit", style=discord.ButtonStyle.primary)
+  @discord.ui.button(label="Edit", style=discord.ButtonStyle.secondary, row=1)
   async def edit_button_callback(self, button, interaction):
     await interaction.response.send_message("This feature is not available yet.")
   
-  @discord.ui.button(label="Stop", style=discord.ButtonStyle.primary)
+  @discord.ui.button(label="Stop", style=discord.ButtonStyle.secondary, row=1)
   async def stop_button_callback(self, button, interaction):
     for child in self.children:
       child.disabled = True
