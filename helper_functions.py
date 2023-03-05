@@ -3,7 +3,7 @@ import os
 import configparser
 import discord 
 
-def add_prompt(user: str, prompt: str, bucket: str):
+def add_prompt(user: str, prompt: str, bucket: str, subbucket: str):
     """
     Adds the user and the submitted prompt to a .csv file for a specific bucket, such as 'SFW' or 'WEEKLY'. 
     Raises a TypeError in case of invalid bucket notation.
@@ -16,19 +16,28 @@ def add_prompt(user: str, prompt: str, bucket: str):
         The content of the prompt. The Modal that creates this will accept up to 4000 characters.
     bucket: :class:`str`
         A denotion for which bucket the prompt goes in. This can be SFW, NSFW or WEEKLY. It is always put in the 'open' bucket, awaiting admin approval.
+    subbucket: :class:`str`
+        Denotes the subbucket as open or ready
     """
 
-    # Check bucket type
-    if bucket == 'SFW':
-        filepath = os.getenv("OPEN_SFW_SUBMISSIONS")
-    elif bucket == 'NSFW':
-        filepath = os.getenv("OPEN_NSFW_SUBMISSIONS")
-    elif bucket == 'WEEKLY':
-        filepath = os.getenv("OPEN_WEEKLY_SUBMISSIONS")
-    else:
-        print("Invalid bucket input - accepted are SFW, NSFW and W.")
-        raise TypeError
+    # Define valid buckets and subbuckets
+    valid_buckets = ["SFW", "NSFW", "WEEKLY"]
+    valid_subbuckets = ["OPEN", "READY"]
 
+    # Check if subbucket is valid
+    if subbucket.upper() not in valid_subbuckets:
+        print("Invalid subbucket input - accepted are OPEN and READY")
+        raise TypeError
+    
+    # Check bucket type
+    if bucket not in valid_buckets:
+        print("Invalid bucket input. Valid buckets are SFW, NSFW and WEEKLY")
+        raise TypeError
+    
+    # Create filepath
+    filepath = os.getenv(f"{subbucket}_{bucket}_SUBMISSIONS")
+
+    # Add input data to the file and resave
     df = pd.read_csv(filepath, delimiter = ';')
     add = pd.DataFrame([[user, prompt]], columns=('user','prompt'))
     new_df = pd.concat([df, add], ignore_index=True) # Don't reference df = pd.concat[df... etc. Gives unbound variable error.
@@ -126,3 +135,13 @@ def errorlog(date, error):
         file_object.write(date, " ; ", error)
     
     file_object.close()
+
+def remove_prompt(index, bucket):
+    filepath = os.getenv(f"OPEN_{bucket}_SUBMISSIONS")
+    df = pd.read_csv(filepath, delimiter = ';')
+    new_df = df.drop([index], axis='index')
+    new_df.to_csv(path_or_buf=filepath, index = False, sep=';') # overwrite existing file
+    
+    # Overwriting the original file in a coroutine instead of using the drop command in the button code is better
+    # This ensures the file is opened, altered, and saved/closed again.
+    # This ensures that anything that tries to use this file, will use the most up-to-date version.
