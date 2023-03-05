@@ -1,6 +1,8 @@
 import discord
 from modals import PromptModal
 from helper_functions import prompt_to_embed
+from helper_functions import add_prompt
+from helper_functions import remove_prompt
 import pandas as pd
 
 # SUBMISSION BUTTONS VIEW
@@ -36,7 +38,21 @@ class ApprovePrompt(discord.ui.View):
 
   @discord.ui.button(label="Accept", style = discord.ButtonStyle.success, row=0)
   async def accept_button_callback(self, button, interaction):
-    await interaction.response.send_message("You accepted this prompt. Or would have if the button worked.")
+    prompt = self.message.embeds[0].fields[1].value # grab the prompt text out of the embed that was previously sent
+    user = self.message.embeds[0].fields[2].value # grab the username of the prompt out of the embed
+    bucket = self.message.embeds[0].title.split(" ")[2] # grab the buckete name from the embed
+
+    # Add prompt to ready-prompts file
+    add_prompt(user, prompt, bucket, subbucket = "READY")
+
+    # Remove prompt from open-prompts file
+    index = int(self.message.embeds[0].fields[0].value) # grab the index of the prompt out of the embed
+    remove_prompt(index, bucket)
+
+    # Proceed to next prompt
+    embed = prompt_to_embed(bucket, index) # prompt is made with the same index, because that's the next unchecked prompt in the OPEN prompts file. The approved prompt was removed and indeces reset.
+    await self.message.delete()
+    await interaction.response.send_message(content = None, view = self, embeds = [embed])
   
   @discord.ui.button(label="Reject", style=discord.ButtonStyle.danger, row=0)
   async def reject_button_callback(self, button, interaction):
