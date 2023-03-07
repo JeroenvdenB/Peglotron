@@ -78,8 +78,11 @@ async def approveprompt(ctx, bucket: discord.Option(str)):
   embed = discord.Embed(title = f"Next {bucket_name} prompt: ")
 
   if bucket_name in valid_buckets: # Check if bucket type is valid
-    embed = prompt_to_embed(bucket_name, 0) # create embed to show the initial prompt before the first viewing of ApprovePrompt()
-    await ctx.respond(content = None, view = ApprovePrompt(), embeds = [embed])
+    [embed, end] = prompt_to_embed(bucket_name, 0) # create embed to show the initial prompt before the first viewing of ApprovePrompt()
+    if end: # end = True if there are no prompts to approve, as handled by prompt_to_embed
+      await ctx.respond(content = None, embeds = [embed]) # This does not summon buttons, since there are no prompts to approve
+    else:
+      await ctx.respond(content = None, view = ApprovePrompt(), embeds = [embed])
   else:
     print("Invalid bucket input")
     await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")   
