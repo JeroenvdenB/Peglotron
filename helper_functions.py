@@ -101,8 +101,12 @@ def set_channel(command: str, channel_id: str):
 
 def prompt_to_embed(bucket: str, index: int = 0):
 # function works, just needs a description now.
+# returns an embed object and the end boolean. If there are no prompts left to approve, end = True.
     # create embed with title
     embed = discord.Embed(title = f"Working on: {bucket}") # create embed object
+
+    # Create end-reached flag
+    end = False
 
     # Generate filepath based on bucket name and read file
     filepath = os.getenv(f"OPEN_{bucket}_SUBMISSIONS")
@@ -114,12 +118,13 @@ def prompt_to_embed(bucket: str, index: int = 0):
     except:
         # write error message
         embed.add_field(name = "Out of prompts!", value = "You're all caught up.")
-        return embed
+        end = True
+        return embed, end
     else:    
         embed.add_field(name = "Index", value= index)
         embed.add_field(name = "Prompt", value = nextprompt)
         embed.add_field(name = 'User', value = df['user'][index])
-        return embed
+        return embed, end
     
 def errorlog(date, error):
 # This function was never tested. Dunno if I need it after all.
