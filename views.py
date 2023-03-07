@@ -50,7 +50,12 @@ class ApprovePrompt(discord.ui.View):
     remove_prompt(index, bucket)
 
     # Proceed to next prompt
-    embed = prompt_to_embed(bucket, index) # prompt is made with the same index, because that's the next unchecked prompt in the OPEN prompts file. The approved prompt was removed and indeces reset.
+    [embed, end] = prompt_to_embed(bucket, index) # prompt is made with the same index, because that's the next unchecked prompt in the OPEN prompts file. The approved prompt was removed and indeces reset.
+
+    # Check if end has been reached. Disable buttons if there are no more prompts to prevent accidental invalid inputs.
+    if end:
+      for child in self.children:
+        child.disabled = True
     await self.message.delete()
     await interaction.response.send_message(content = None, view = self, embeds = [embed])
   
@@ -63,7 +68,7 @@ class ApprovePrompt(discord.ui.View):
     index = int(self.message.embeds[0].fields[0].value) # grab the index of the prompt out of the embed that was previously sent
     index += 1 # increase the index to move to the next prompt
     bucket = self.message.embeds[0].title.split(" ")[2] # grab the buckete name from the embed
-    embed = prompt_to_embed(bucket, index)
+    [embed, end] = prompt_to_embed(bucket, index)
     await self.message.delete() # remove original message to keep the channel clutter-free
     await interaction.response.send_message(content = None, view = self, embeds = [embed]) # don't edit, send a new message! Otherwise self.message does NOT update!
 
