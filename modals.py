@@ -14,7 +14,7 @@ class PromptModal(discord.ui.Modal):
     user = interaction.user
     prompt = self.children[0].value
     bucket = self.custom_id
-    add_prompt(user, prompt, bucket)
+    add_prompt(user, prompt, bucket, "OPEN") # "OPEN" subbucket is for submissions awaiting approval
     
     # Create an embed and respond
     embed = discord.Embed(title = "Prompt submitted for approval :)", color = 5763719) # Green embed
