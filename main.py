@@ -54,6 +54,7 @@ async def show(ctx):
 async def submitbutton(ctx):
   await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons(timeout=180))
 
+
 # SETTING OUTPUTS
 @bot.command(description = "Ping in output channel")
 async def channelping (ctx):
@@ -67,6 +68,7 @@ async def channelping (ctx):
 async def pingset(ctx, channel_id: discord.Option(str)):
   set_channel('channelping', channel_id)
   await ctx.respond(f'The output channel for `\\channelping` was set to: {channel_id}')
+
 
 # APPROVE PROMPTS WITH BUTTONS
 @bot.command(description = "Approve or reject prompts")
