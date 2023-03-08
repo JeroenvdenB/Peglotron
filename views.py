@@ -47,7 +47,7 @@ class ApprovePrompt(discord.ui.View):
 
     # Remove prompt from open-prompts file
     index = int(self.message.embeds[0].fields[0].value) # grab the index of the prompt out of the embed
-    remove_prompt(index, bucket)
+    remove_prompt(index, bucket, subbucket = "OPEN")
 
     # Proceed to next prompt
     [embed, end] = prompt_to_embed(bucket, index) # prompt is made with the same index, because that's the next unchecked prompt in the OPEN prompts file. The approved prompt was removed and indeces reset.
@@ -66,7 +66,7 @@ class ApprovePrompt(discord.ui.View):
     index = int(self.message.embeds[0].fields[0].value)
 
     # Remove the prompt
-    remove_prompt(index, bucket)
+    remove_prompt(index, bucket, subbucket = "OPEN")
 
     # Proceed to the next prompt without changing index
     [embed, end] = prompt_to_embed(bucket, index)
