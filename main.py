@@ -2,6 +2,7 @@
 # and show a whole bunch of examples for future reference.
 
 import discord
+from discord.ext import tasks, commands
 import os
 import configparser
 import pandas as pd
@@ -87,6 +88,11 @@ async def approveprompt(ctx, bucket: discord.Option(str)):
     print("Invalid bucket input")
     await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")   
 
+@tasks.loop(seconds = 2)
+async def twosecond_ping():
+  print("Two seconds passed")
+
+twosecond_ping.start()
 bot.run(token)
 
 # No code is executed after the bot.run()
