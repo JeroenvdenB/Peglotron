@@ -61,7 +61,23 @@ class ApprovePrompt(discord.ui.View):
   
   @discord.ui.button(label="Reject", style=discord.ButtonStyle.danger, row=0)
   async def reject_button_callback(self, button, interaction):
-    await interaction.response.send_message("You rejected this prompt. Or would have if the button worked.")
+    # Grab bucket and index
+    bucket = self.message.embeds[0].title.split(" ")[2]
+    index = int(self.message.embeds[0].fields[0].value)
+
+    # Remove the prompt
+    remove_prompt(index, bucket)
+
+    # Proceed to the next prompt without changing index
+    [embed, end] = prompt_to_embed(bucket, index)
+    
+    # Check if end has been reached. Disable buttons if there are no more prompts to prevent accidental invalid inputs.
+    if end:
+      for child in self.children:
+        child.disabled = True
+    await self.message.delete()
+    await interaction.response.send_message(content = None, view = self, embeds = [embed])
+
 
   @discord.ui.button(label="Skip", style = discord.ButtonStyle.secondary, row=1)
   async def skip_button_callback(self, button, interaction):
@@ -69,6 +85,11 @@ class ApprovePrompt(discord.ui.View):
     index += 1 # increase the index to move to the next prompt
     bucket = self.message.embeds[0].title.split(" ")[2] # grab the buckete name from the embed
     [embed, end] = prompt_to_embed(bucket, index)
+
+    # Check if the end has been reached. If so, disable buttons.
+    if end:
+      for child in self.children:
+        child.disabled = True
     await self.message.delete() # remove original message to keep the channel clutter-free
     await interaction.response.send_message(content = None, view = self, embeds = [embed]) # don't edit, send a new message! Otherwise self.message does NOT update!
 
@@ -80,6 +101,6 @@ class ApprovePrompt(discord.ui.View):
   async def stop_button_callback(self, button, interaction):
     for child in self.children:
       child.disabled = True
-    await self.message.edit(content = " ", view = self)
-    await interaction.response.send_message("Thank you, I disabled the menu.")
+    await self.message.delete()
+    await interaction.response.send_message(content = "Thank you, I disabled the menu.", view = self)
 
