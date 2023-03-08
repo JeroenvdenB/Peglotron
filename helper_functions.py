@@ -141,8 +141,8 @@ def errorlog(date, error):
     
     file_object.close()
 
-def remove_prompt(index, bucket):
-    filepath = os.getenv(f"OPEN_{bucket}_SUBMISSIONS")
+def remove_prompt(index, bucket, subbucket):
+    filepath = os.getenv(f"{subbucket}_{bucket}_SUBMISSIONS")
     df = pd.read_csv(filepath, delimiter = ';')
     new_df = df.drop([index], axis='index')
     new_df.to_csv(path_or_buf=filepath, index = False, sep=';') # overwrite existing file
