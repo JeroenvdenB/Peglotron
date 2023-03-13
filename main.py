@@ -6,6 +6,7 @@ from discord.ext import tasks, commands
 import os
 import configparser
 import pandas as pd
+from datetime import datetime
 from dotenv import load_dotenv
 from helper_functions import add_prompt
 from helper_functions import df_to_text
@@ -88,11 +89,25 @@ async def approveprompt(ctx, bucket: discord.Option(str)):
     print("Invalid bucket input")
     await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")   
 
-@tasks.loop(seconds = 2)
-async def twosecond_ping():
-  print("Two seconds passed")
+@tasks.loop(minutes = 60)
+async def refresh_prompts():
+  hour = datetime.now().strftime("%H") # Fetches system time, hour only on a 24-hour scale
+  if hour == 12:
+    print("The hour is 12 - time for a new prompt.")
+    # Insert code to poop out prompt and refresh
+  else:
+    print("The hour is not 12.")
 
-twosecond_ping.start()
+@tasks.loop(minutes = 1) # This works! Use this kind of code to send daily prompts after a new one is assigned.
+async def send_server_message(): # use code from channelping command, because I know it works.
+  config = configparser.ConfigParser()
+  config.read('peglotron.ini')
+  # channel_id = int(config['OutputChannels']['channelping'])
+  await bot.wait_until_ready() # hold off on next task until the bot has connected, or it'll error out looking for a channel ID it can't find.
+  await bot.get_channel(int("975425044190732328")).send("One minute has passed.")
+
+send_server_message.start()
+refresh_prompts.start()
 bot.run(token)
 
 # No code is executed after the bot.run()
