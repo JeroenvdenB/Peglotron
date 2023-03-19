@@ -40,16 +40,6 @@ async def bye(ctx):
   await ctx.respond(f"Bye, {ctx.author}!")
 
 
-# A command to make the bot show what's in a specific csv file
-# Example: show the submissions.csv
-# Used a helper function because this behavior will return for all seperate buckets.
-@bot.command(description = "Show saved submissions.")
-async def show(ctx):
-  bucket = "OPEN_SFW_SUBMISSIONS"
-  response_text = f'```' + df_to_text(bucket) + f'```' #formatting with ``` triggers a markdown window.
-  await ctx.respond(response_text)
-
-
 # BUTTONS
 # All views are in views.py
 @bot.command(description = "Summon the submissions buttons.")
