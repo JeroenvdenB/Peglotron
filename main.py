@@ -2,14 +2,13 @@
 # and show a whole bunch of examples for future reference.
 
 import discord
+from discord import default_permissions
 from discord.ext import tasks, commands
 import os
 import configparser
 import pandas as pd
 from datetime import datetime
 from dotenv import load_dotenv
-from helper_functions import add_prompt
-from helper_functions import df_to_text
 from helper_functions import set_channel
 from helper_functions import prompt_to_embed
 from views import SubmissionButtons
@@ -64,6 +63,7 @@ async def pingset(ctx, channel_id: discord.Option(str)):
 
 # APPROVE PROMPTS WITH BUTTONS
 @bot.command(description = "Approve or reject prompts")
+@default_permissions(administrator = True)
 async def approveprompt(ctx, bucket: discord.Option(str)):
   valid_buckets = ['SFW', 'NSFW', 'WEEKLY']
   bucket_name = bucket.upper()
