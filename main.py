@@ -77,7 +77,16 @@ async def approveprompt(ctx, bucket: discord.Option(str)):
       await ctx.respond(content = None, view = ApprovePrompt(), embeds = [embed])
   else:
     print("Invalid bucket input")
-    await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")   
+    await ctx.respond(f"Invalid bucket name. Valid buckets are (not case sensitive): `{valid_buckets}`")
+
+@bot.command(description = "Show the current prompt.")
+async def show(ctx, bucket: discord.Option(str)):
+  valid_buckets = ['SFW', 'NSFW', 'WEEKLY']
+  bucket_name = bucket.upper()
+
+  if bucket_name in valid_buckets:
+    pass
+    # The function that makes an embed of the last-added 'used' prompt goes here
 
 @tasks.loop(minutes = 60)
 async def refresh_prompts():
