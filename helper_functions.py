@@ -45,23 +45,6 @@ def add_prompt(user: str, prompt: str, bucket: str, subbucket: str):
 
     return True
 
-def df_to_text(bucket: str):
-    """
-    Accepts a file bucket name and converts it to a string,
-    suitable for printing in a discord message.
-    It's formatted in markdown to show OK on discord too.
-    
-    Parameters
-    ----------
-    bucket: :class:`str`
-        Input a filepath name from .env. That's different from the prompt storage system, which only uses SFW, NSFW and W for bucket denotion!
-        Since this function can show any .csv content (open, ready and used prompt buckets), you need to be more specific.    
-    """
-
-    filepath = os.getenv(bucket)
-    response_text = pd.read_csv(filepath, delimiter = ';').to_markdown()
-    return response_text
-
 def set_channel(command: str, channel_id: str):
     """
     Changes the ouput channel ID for a function that outputs into the server.
