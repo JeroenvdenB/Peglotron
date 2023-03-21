@@ -85,8 +85,21 @@ async def show(ctx, bucket: discord.Option(str)):
   bucket_name = bucket.upper()
 
   if bucket_name in valid_buckets:
-    pass
-    # The function that makes an embed of the last-added 'used' prompt goes here
+    # The index number of the current prompt is stored in the ini file
+    config = configparser.ConfigParser()
+    config.read('peglotron.ini')
+    index = config['CurrentPrompts'][bucket_name]
+    # Then retrieve the prompt information from the USED prompts list 
+    filepath = os.getenv(f"USED_{bucket_name}_SUBMISSIONS")
+    df = pd.read_csv(filepath, delimiter = ';')
+    prompt = df['prompt'][index]
+    user = df['user'][index]
+    shown = int(df['shown'][index])
+    
+    # Create embed to reply with and show prompt
+    embed = format_prompt(prompt, user, shown)
+
+
 
 @tasks.loop(minutes = 60)
 async def refresh_prompts():
