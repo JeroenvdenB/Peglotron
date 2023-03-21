@@ -133,3 +133,11 @@ def remove_prompt(index, bucket, subbucket):
     # Overwriting the original file in a coroutine instead of using the drop command in the button code is better
     # This ensures the file is opened, altered, and saved/closed again.
     # This ensures that anything that tries to use this file, will use the most up-to-date version.
+
+def format_prompt(prompt: str, user: str, shown: int):
+    # Function should generate an embed for a prompt to show in the server.
+    # It's called on by the /show command to show the current prompt.
+    # It's called on by the task that creates new current prompts and moves
+    # the used prompts between files.
+
+    pass
