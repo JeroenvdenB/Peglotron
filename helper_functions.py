@@ -134,10 +134,13 @@ def remove_prompt(index, bucket, subbucket):
     # This ensures the file is opened, altered, and saved/closed again.
     # This ensures that anything that tries to use this file, will use the most up-to-date version.
 
-def format_prompt(prompt: str, user: str, shown: int):
+def format_prompt(bucket: str, prompt: str, user: str, shown: int):
     # Function should generate an embed for a prompt to show in the server.
     # It's called on by the /show command to show the current prompt.
-    # It's called on by the task that creates new current prompts and moves
-    # the used prompts between files.
+    # It's called on by the task that creates new current prompts
 
-    pass
+    embed = discord.Embed(title = f':snowflake:  Daily {bucket} prompt  :dragon:')
+    embed.add_field(name = " ", value = prompt)
+    embed.set_footer(text = f'Suggested by {user}. This prompt was shown {shown} time(s) before')
+
+    return embed
