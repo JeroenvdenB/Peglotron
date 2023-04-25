@@ -14,8 +14,7 @@ class PromptModal(discord.ui.Modal):
     user = interaction.user
     prompt = self.children[0].value
     bucket = self.custom_id
-    add_prompt(user, prompt, bucket, subbucket = "OPEN") # "OPEN" subbucket is for submissions awaiting approval
-    
+
     # Create an embed and respond
     embed = discord.Embed(title = "Prompt submitted for approval :)", color = 5763719) # Green embed
     if bucket == 'NSFW':
@@ -24,4 +23,8 @@ class PromptModal(discord.ui.Modal):
       embed.add_field(name = " ", value = prompt)
     embed.set_author(name = user.display_name) # User is stored, but display_name is shown in response
 
-    await interaction.response.send_message(embeds = [embed])
+    if ';' in prompt:
+      await interaction.response.send_message("Sorry, you can't submit prompts with the `;` (semicolon) character in it! It makes my code go boom :dizzy_face:")
+    else:
+      add_prompt(user, prompt, bucket, subbucket = "OPEN") # "OPEN" subbucket is for submissions awaiting approval
+      await interaction.response.send_message(embeds = [embed])
