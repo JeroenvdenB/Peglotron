@@ -11,6 +11,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from helper_functions import set_channel
 from helper_functions import prompt_to_embed
+from helper_functions import format_prompt
 from views import SubmissionButtons
 from views import ApprovePrompt
 
@@ -88,7 +89,8 @@ async def show(ctx, bucket: discord.Option(str)):
     # The index number of the current prompt is stored in the ini file
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
-    index = config['CurrentPrompts'][bucket_name]
+    index_str = config['CurrentPrompts'][bucket_name]
+    index = int(index_str)
     # Then retrieve the prompt information from the USED prompts list 
     filepath = os.getenv(f"USED_{bucket_name}_SUBMISSIONS")
     df = pd.read_csv(filepath, delimiter = ';')
@@ -96,10 +98,11 @@ async def show(ctx, bucket: discord.Option(str)):
     user = df['user'][index]
     shown = int(df['shown'][index])
     
-    # Create embed to reply with and show prompt
-    embed = format_prompt(prompt, user, shown)
-
-
+    embed = format_prompt(bucket_name, prompt, user, shown)
+    await ctx.respond(embeds = [embed])
+  else:
+    await ctx.respond("Something went wrong. Notify my overlord, please.")
+  
 
 @tasks.loop(minutes = 60)
 async def refresh_prompts():
