@@ -91,23 +91,16 @@ async def show(ctx, bucket: discord.Option(str)):
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
     index_str = config['CurrentPrompts'][bucket_name]
-    #index = int(index_str)
-    index = 3
+    index = int(index_str)
 
     # Then retrieve the prompt information from the USED prompts list 
     filepath = os.getenv(f"USED_{bucket_name}_SUBMISSIONS")
     df = pd.read_csv(filepath, delimiter = ';')
     prompt = df['prompt'][index]
-    print(prompt)
-    user_id = int(df['user'][index])
-    user_object = bot.get_user(user_id) # does not work and I don't know why
-    print(user_object)
-    if user_object == None:
-      await ctx.respond("Whoops")
-    username = user_object.display_name
+    user = df['user'][index]
     shown = int(df['shown'][index])
     
-    embed = format_prompt(bucket_name, prompt, username, shown)
+    embed = format_prompt(bucket_name, prompt, user, shown)
     await ctx.respond(embeds = [embed])
   else:
     await ctx.respond("Something went wrong. Notify my overlord, please.")
