@@ -3,6 +3,7 @@
 
 import discord
 from discord import default_permissions
+from discord.utils import get
 from discord.ext import tasks, commands
 import os
 import configparser
@@ -90,19 +91,44 @@ async def show(ctx, bucket: discord.Option(str)):
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
     index_str = config['CurrentPrompts'][bucket_name]
-    index = int(index_str)
+    #index = int(index_str)
+    index = 3
+
     # Then retrieve the prompt information from the USED prompts list 
     filepath = os.getenv(f"USED_{bucket_name}_SUBMISSIONS")
     df = pd.read_csv(filepath, delimiter = ';')
     prompt = df['prompt'][index]
-    user = df['user'][index]
+    print(prompt)
+    user_id = int(df['user'][index])
+    user_object = bot.get_user(user_id) # does not work and I don't know why
+    print(user_object)
+    if user_object == None:
+      await ctx.respond("Whoops")
+    username = user_object.display_name
     shown = int(df['shown'][index])
     
-    embed = format_prompt(bucket_name, prompt, user, shown)
+    embed = format_prompt(bucket_name, prompt, username, shown)
     await ctx.respond(embeds = [embed])
   else:
     await ctx.respond("Something went wrong. Notify my overlord, please.")
-  
+
+@bot.command(description = "Send a DM to a user with a certain ID")
+async def sayhi(ctx, id: discord.Option(str)):
+  # Keep this in the code as an example how to convert id's to nicknames. For now, disregard.
+  # Remove this before launch
+  id_int = int(id)
+  user = get(bot.get_all_members(), id =id_int)
+  if user:
+    print('found it!')
+    print(user, type(user))
+    print(user.display_name)
+  else:
+    print('did not find the user')
+  #if user_object == None:
+  #  await ctx.respond("something is broken...")
+  #else:
+  #  await ctx.respond(f'Hi there, @{user_object.name}')
+
 
 @tasks.loop(minutes = 60)
 async def refresh_prompts():
