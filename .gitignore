@@ -2,6 +2,9 @@
 __pycache__
 .DS_Store
 
+# Prompt storage
+promptfiles/*
+
 # LaTeX stuff
 .aux
 .out
