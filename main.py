@@ -126,7 +126,6 @@ async def promptcycler():
       await bot.get_channel(channelId).send(content=None, embed=nextPromptEmbed)
 
 
-
 promptcycler.start()
 bot.run(token)
 
