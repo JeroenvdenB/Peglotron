@@ -2,8 +2,9 @@ import pandas as pd
 import os
 import configparser
 import discord 
+import random
 
-def add_prompt(user: str, prompt: str, bucket: str, subbucket: str):
+def add_prompt(user: str, prompt: str, bucket: str, subbucket: str, shown = 0):
     """
     Adds the user and the submitted prompt to a .csv file for a specific bucket, such as 'SFW' or 'WEEKLY'. 
     Raises a TypeError in case of invalid bucket notation.
@@ -22,11 +23,11 @@ def add_prompt(user: str, prompt: str, bucket: str, subbucket: str):
 
     # Define valid buckets and subbuckets
     valid_buckets = ["SFW", "NSFW", "WEEKLY"]
-    valid_subbuckets = ["OPEN", "READY"]
+    valid_subbuckets = ["OPEN", "READY", "USED"]
 
     # Check if subbucket is valid
     if subbucket.upper() not in valid_subbuckets:
-        print("Invalid subbucket input - accepted are OPEN and READY")
+        print("Invalid subbucket input - accepted are OPEN, READY and USED")
         raise TypeError
     
     # Check bucket type
@@ -39,7 +40,12 @@ def add_prompt(user: str, prompt: str, bucket: str, subbucket: str):
 
     # Add input data to the file and resave
     df = pd.read_csv(filepath, delimiter = ';')
-    add = pd.DataFrame([[user, prompt]], columns=('user','prompt'))
+
+    if subbucket != "USED":
+        add = pd.DataFrame([[user, prompt]], columns=('user','prompt'))
+    else:
+        add = pd.DataFrame([[user, prompt, shown]], columns=('user','prompt','shown'))
+    
     new_df = pd.concat([df, add], ignore_index=True) # Don't reference df = pd.concat[df... etc. Gives unbound variable error.
     new_df.to_csv(path_or_buf=filepath, index=False, sep=';') # Overwrite existing file
 
@@ -109,20 +115,6 @@ def prompt_to_embed(bucket: str, index: int = 0):
         embed.add_field(name = 'User', value = df['user'][index])
         return embed, end
     
-def errorlog(date, error):
-# This function was never tested. Dunno if I need it after all.
-    # Open the filein append and read mode (a+)
-    with open ("Errorlog.txt", 'a+') as file_object:
-        # Move the read cursor to the start of the file.
-        file_object.seek(0)
-        # If file is not empty append '\n' for new line
-        data = file_object.read(100)
-        if len(data) > 0:
-            file_object.write("\n")
-        # Append text at the end of the file
-        file_object.write(date, " ; ", error)
-    
-    file_object.close()
 
 def remove_prompt(index, bucket, subbucket):
     filepath = os.getenv(f"{subbucket}_{bucket}_SUBMISSIONS")
@@ -143,4 +135,45 @@ def format_prompt(bucket: str, prompt: str, user: str, shown: int):
     embed.add_field(name = " ", value = prompt)
     embed.set_footer(text = f'Suggested by {user}. This prompt was shown {shown} time(s) before')
 
+    return embed
+
+def CyclePrompt(bucket: str):
+    #String for bucket, SFW, NSFW or WEEKLY
+    #Current prompt number as int representing the line in the csv file
+
+    # Selecting the next prompt text from READY, or if empty, from USED
+    filepathREADY = os.getenv(f"READY_{bucket}_SUBMISSIONS")
+    filepathUSED = os.getenv(f"USED_{bucket}_SUBMISSIONS")
+    dfREADY = pd.read_csv(filepathREADY, delimiter= ';')
+    dfUSED = pd.read_csv(filepathUSED, delimiter= ';')
+
+    if dfREADY.size == 0: #Switch to recycling prompts instead
+        index = random.randrange(0, dfUSED.size/3)
+        nextPrompt = dfUSED['prompt'][index]
+        user = dfUSED['user'][index]
+        shown = dfUSED['shown'][index] + 1
+
+        # Update the shown prompt - shown is increased by one
+        # Updating = add new line, remove original
+        add_prompt(user, nextPrompt, bucket, "USED", shown)
+        remove_prompt(index, bucket, "USED")
+    else:
+        shown = 0
+        nextPrompt = dfREADY['prompt'][0]
+        user = dfREADY['user'][0]
+        add_prompt(user, nextPrompt, bucket, "USED", shown + 1)
+        remove_prompt(0, bucket, "READY")
+
+
+    # Set current prompt index in config file
+    # Later realized that the index of the current prompt is ALWAYS the last one of the USED file 
+    index = dfUSED.size//3 - 1
+    config = configparser.ConfigParser()
+    config.read('peglotron.ini')
+    config['CurrentPrompts'][bucket] = str(index)
+    with open('peglotron.ini', 'w') as configfile:
+        config.write(configfile)
+    
+    embed = format_prompt(bucket, nextPrompt, user, shown)
+    
     return embed

@@ -1,6 +1,3 @@
-# The main goal of this version is to get slash commands working
-# and show a whole bunch of examples for future reference.
-
 import discord
 from discord import default_permissions
 from discord.utils import get
@@ -15,6 +12,7 @@ from helper_functions import prompt_to_embed
 from helper_functions import format_prompt
 from views import SubmissionButtons
 from views import ApprovePrompt
+from helper_functions import CyclePrompt
 
 
 # Make a .env locally that contains the token of the server that the bot should log into.
@@ -28,28 +26,14 @@ bot = discord.Bot()
 async def on_ready():
   print(f"We have logged in as {bot.user}")
 
-# Create Slash commands group with the bot.create_group
-# Keep until release as test-commands
-greetings = bot.create_group("greetings","Greet people")
 
-@greetings.command(description = "Say hello!")
-async def hello(ctx):
-  await ctx.respond(f"Hello, {ctx.author}!")
-
-@greetings.command(description = "Say goodbye :(")
-async def bye(ctx):
-  await ctx.respond(f"Bye, {ctx.author}!")
-
-
-# BUTTONS
-# All views are in views.py
 @bot.command(description = "Summon the submissions buttons.")
 async def submitbutton(ctx):
   await ctx.respond("Choose which type of submission you'd like to do!", view = SubmissionButtons(timeout=180))
 
 
-# SETTING OUTPUTS
 @bot.command(description = "Ping in output channel")
+@default_permissions(administrator = True)
 async def channelping (ctx):
   config = configparser.ConfigParser()
   config.read('peglotron.ini')
@@ -57,7 +41,9 @@ async def channelping (ctx):
   await bot.get_channel(channel_id).send("Ping!")
   await ctx.respond("Pinging...")
 
+
 @bot.command(description = "Set channelping output channel")
+@default_permissions(administrator = True)
 async def pingset(ctx, channel_id: discord.Option(str)):
   set_channel('channelping', channel_id)
   await ctx.respond(f'The output channel for `\\channelping` was set to: {channel_id}')
@@ -90,58 +76,58 @@ async def show(ctx, bucket: discord.Option(str)):
     # The index number of the current prompt is stored in the ini file
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
-    index_str = config['CurrentPrompts'][bucket_name]
-    index = int(index_str)
+    index = int(config['CurrentPrompts'][bucket_name])
+    channelId = int(config['OutputChannels'][f'{bucket.lower()}prompt'])
 
     # Then retrieve the prompt information from the USED prompts list 
     filepath = os.getenv(f"USED_{bucket_name}_SUBMISSIONS")
     df = pd.read_csv(filepath, delimiter = ';')
     prompt = df['prompt'][index]
+    # Hey, guess what?! df.iloc[-1]['prompt'] works too, because the final row is always the current prompt :)
     user = df['user'][index]
     shown = int(df['shown'][index])
     
-    embed = format_prompt(bucket_name, prompt, user, shown)
-    await ctx.respond(embeds = [embed])
+    promptEmbed = format_prompt(bucket_name, prompt, user, shown)
+
+    await bot.get_channel(channelId).send(content=None, embed=promptEmbed)
+    await ctx.respond("I've repeated the prompt :)")
   else:
     await ctx.respond("Something went wrong. Notify my overlord, please.")
 
-@bot.command(description = "Send a DM to a user with a certain ID")
-async def sayhi(ctx, id: discord.Option(str)):
-  # Keep this in the code as an example how to convert id's to nicknames. For now, disregard.
-  # Remove this before launch
-  id_int = int(id)
-  user = get(bot.get_all_members(), id =id_int)
-  if user:
-    print('found it!')
-    print(user, type(user))
-    print(user.display_name)
+@bot.command(description = "Force cycle to next prompt")
+@default_permissions(administrator = True)
+async def forceprompt(ctx, bucket: discord.Option(str)):
+  valid_buckets = ['SFW', 'NSFW', 'WEEKLY']
+
+  if bucket.upper() in valid_buckets:
+    prompt = CyclePrompt(bucket.upper())
+    config = configparser.ConfigParser()
+    config.read('peglotron.ini')
+    channelId = int(config['OutputChannels'][f'{bucket.lower()}prompt'])
+    await bot.get_channel(channelId).send(content=None, embed=prompt)
+    await ctx.respond("Prompt cycled succesfully!")
   else:
-    print('did not find the user')
-  #if user_object == None:
-  #  await ctx.respond("something is broken...")
-  #else:
-  #  await ctx.respond(f'Hi there, @{user_object.name}')
+    await ctx.respond("That's not a valid bucket. Please enter SFW, NSFW or WEEKLY")
 
 
 @tasks.loop(minutes = 60)
-async def refresh_prompts():
-  hour = datetime.now().strftime("%H") # Fetches system time, hour only on a 24-hour scale
-  if hour == 12:
-    print("The hour is 12 - time for a new prompt.")
-    # Insert code to poop out prompt and refresh
-  else:
-    print("The hour is not 12.")
+async def promptcycler():
+  hour = datetime.now().strftime("%H") # Fetches system time, hour only, on a 24-hour scale
+  await bot.wait_until_ready()
+  hour = 12
+  if int(hour) == 12:
+    config = configparser.ConfigParser()
+    config.read('peglotron.ini')
+    buckets = ["sfw", "nsfw", "weekly"]
 
-@tasks.loop(minutes = 1) # This works! Use this kind of code to send daily prompts after a new one is assigned.
-async def send_server_message(): # use code from channelping command, because I know it works.
-  config = configparser.ConfigParser()
-  config.read('peglotron.ini')
-  # channel_id = int(config['OutputChannels']['channelping'])
-  await bot.wait_until_ready() # hold off on next task until the bot has connected, or it'll error out looking for a channel ID it can't find.
-  await bot.get_channel(int("975425044190732328")).send("One minute has passed.")
+    for bucket in buckets:
+      channelId = int(config['OutputChannels'][f'{bucket}prompt'])
+      nextPromptEmbed = CyclePrompt(bucket.upper())
+      await bot.get_channel(channelId).send(content=None, embed=nextPromptEmbed)
 
-send_server_message.start()
-refresh_prompts.start()
+
+
+promptcycler.start()
 bot.run(token)
 
 # No code is executed after the bot.run()
