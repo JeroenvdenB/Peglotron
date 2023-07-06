@@ -113,9 +113,8 @@ async def forceprompt(ctx, bucket: discord.Option(str)):
 @tasks.loop(minutes = 60)
 async def promptcycler():
   hour = datetime.now().strftime("%H") # Fetches system time, hour only, on a 24-hour scale
-  print(hour)
+  print(f"Task promptycler was performed. Read hour from system time is: {hour}")
   await bot.wait_until_ready()
-  hour = 12
   if int(hour) == 12:
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
