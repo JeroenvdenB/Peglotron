@@ -113,6 +113,7 @@ async def forceprompt(ctx, bucket: discord.Option(str)):
 @tasks.loop(minutes = 60)
 async def promptcycler():
   hour = datetime.now().strftime("%H") # Fetches system time, hour only, on a 24-hour scale
+  print(hour)
   await bot.wait_until_ready()
   hour = 12
   if int(hour) == 12:
