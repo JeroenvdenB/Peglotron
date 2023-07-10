@@ -6,6 +6,7 @@ import os
 import configparser
 import pandas as pd
 from datetime import datetime
+from datetime import date
 from dotenv import load_dotenv
 from helper_functions import set_channel
 from helper_functions import prompt_to_embed
@@ -118,15 +119,24 @@ async def promptcycler():
   if int(hour) == 12:
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
-    buckets = ["sfw", "nsfw", "weekly"]
+    buckets = ["sfw", "nsfw"]
 
     for bucket in buckets:
       channelId = int(config['OutputChannels'][f'{bucket}prompt'])
       nextPromptEmbed = CyclePrompt(bucket.upper())
       await bot.get_channel(channelId).send(content=None, embed=nextPromptEmbed)
 
+@tasks.loop(hours = 24)
+async def weeklycycle():
+  if date.today().weekday() == 0:
+    config = configparser.ConfigParser()
+    config.read('peglotron.ini')
+    channelId = int(config['OutputChannels']['weeklyprompt'])
+    nextPromptEmbed = CyclePrompt("WEEKLY")
+    await bot.get_channel(channelId).send(content=None, embed=nextPromptEmbed)
 
 promptcycler.start()
+weeklycycle.start()
 bot.run(token)
 
 # No code is executed after the bot.run()
