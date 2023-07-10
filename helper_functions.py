@@ -167,7 +167,7 @@ def CyclePrompt(bucket: str):
 
     # Set current prompt index in config file
     # Later realized that the index of the current prompt is ALWAYS the last one of the USED file 
-    index = dfUSED.size//3 - 1
+    index = dfUSED.size//3
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
     config['CurrentPrompts'][bucket] = str(index)
