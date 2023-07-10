@@ -77,16 +77,16 @@ async def show(ctx, bucket: discord.Option(str)):
     # The index number of the current prompt is stored in the ini file
     config = configparser.ConfigParser()
     config.read('peglotron.ini')
-    index = int(config['CurrentPrompts'][bucket_name])
+    #index = int(config['CurrentPrompts'][bucket_name])
     channelId = int(config['OutputChannels'][f'{bucket.lower()}prompt'])
 
     # Then retrieve the prompt information from the USED prompts list 
     filepath = os.getenv(f"USED_{bucket_name}_SUBMISSIONS")
     df = pd.read_csv(filepath, delimiter = ';')
-    prompt = df['prompt'][index]
     # Hey, guess what?! df.iloc[-1]['prompt'] works too, because the final row is always the current prompt :)
-    user = df['user'][index]
-    shown = int(df['shown'][index])
+    prompt = df.iloc[-1]['prompt']
+    user = df.iloc[-1]['user']
+    shown = int(df.iloc[-1]['shown'])
     
     promptEmbed = format_prompt(bucket_name, prompt, user, shown)
 
